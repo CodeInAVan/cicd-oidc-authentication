@@ -1,0 +1,183 @@
+version: '2.1'
+commands:
+
+  az-access-key-authentication-terraform-plan:
+    description: "Authenticate with Azure using a CircleCI OIDC token and run terraform."
+    parameters:
+      client-secret: 
+        type: env_var_name
+        default: AZURE_CLIENT_SECRET
+      client-id: 
+        type: env_var_name
+        default: AZURE_CLIENT_ID
+      tenant-id: 
+        type: env_var_name
+        default: AZURE_TENANT_ID
+      subscription-id:
+        type: env_var_name
+        default: AZURE_SUBSCRIPTION_ID
+      backend-access-key:
+        type: env_var_name
+        default: BACKEND_ACCESS_KEY
+      backend-resource-group-name:
+        type: env_var_name
+        default: BACKEND_RG
+      backend-storage-account-name:
+        type: env_var_name
+        default: BACKEND_SG      
+      backend-container-name:
+        type: env_var_name
+        default: BACKEND_CONTAINER
+      backend-key:
+        type: env_var_name
+        default: BACKEND_KEY
+      oidc_token_file_path: 
+        type: string
+        default: ./circleci/oidc_token.json
+    steps:
+      - checkout
+      - run: 
+          command: |
+            export ARM_OIDC_TOKEN=$CIRCLE_OIDC_TOKEN
+            export ARM_CLIENT_ID="${<< parameters.client-id >>}"
+            export ARM_SUBSCRIPTION_ID="${<< parameters.subscription-id >>}"
+            export ARM_TENANT_ID="${<< parameters.tenant-id >>}"
+            export ARM_USE_OIDC=true
+            export TF_LOG="DEBUG"
+            export TF_LOG_PATH="/tmp/artifacts/terraform-access-key-plan.log"
+
+            python3 /rackspace/plan.py
+          name: Terraform Plan - Access Key for Backend, OIDC for provider
+      - store_artifacts:
+          path: /tmp/artifacts
+          destination: /
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - .terraform.*.tar.gz
+            - terraform.*.plan
+            - layers
+
+  az-oidc-authentication-terraform-plan:
+    description: "Authenticate with Azure using a CircleCI OIDC token and run terraform."
+    parameters:
+      client-secret: 
+        type: env_var_name
+        default: AZURE_CLIENT_SECRET
+      client-id: 
+        type: env_var_name
+        default: AZURE_CLIENT_ID
+      tenant-id: 
+        type: env_var_name
+        default: AZURE_TENANT_ID
+      subscription-id:
+        type: env_var_name
+        default: AZURE_SUBSCRIPTION_ID
+      backend-access-key:
+        type: env_var_name
+        default: BACKEND_ACCESS_KEY
+      backend-resource-group-name:
+        type: env_var_name
+        default: BACKEND_RG
+      backend-storage-account-name:
+        type: env_var_name
+        default: BACKEND_SG      
+      backend-container-name:
+        type: env_var_name
+        default: BACKEND_CONTAINER
+      backend-key:
+        type: env_var_name
+        default: BACKEND_KEY
+      oidc_token_file_path: 
+        type: string
+        default: ./circleci/oidc_token.json
+    steps:
+      - checkout
+      - run: 
+          command: |
+            export ARM_OIDC_TOKEN=$CIRCLE_OIDC_TOKEN
+            mkdir ./circleci
+
+            echo $CIRCLE_OIDC_TOKEN > << parameters.oidc_token_file_path >>
+            export ARM_OIDC_TOKEN_FILE_PATH=<< parameters.oidc_token_file_path >>
+            export ARM_CLIENT_ID="${<< parameters.client-id >>}"
+            export ARM_SUBSCRIPTION_ID="${<< parameters.subscription-id >>}"
+            export ARM_TENANT_ID="${<< parameters.tenant-id >>}"
+            export ARM_USE_OIDC=true
+            export TF_LOG="DEBUG"
+            export TF_LOG_PATH="/tmp/artifacts/terraform-oidc-plan.log"
+
+            python3 /rackspace/plan-oidc.py
+          name: Terraform Plan OIDC Backend
+      - store_artifacts:
+          path: /tmp/artifacts
+          destination: /
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - .terraform.*.tar.gz
+            - terraform.*.plan
+            - layers
+
+
+  az-oidc-authentication-terraform-apply:
+    description: "Authenticate with Azure using a CircleCI OIDC token and run terraform."
+    parameters:
+      client-id: 
+        type: env_var_name
+        default: AZURE_CLIENT_ID
+      tenant-id: 
+        type: env_var_name
+        default: AZURE_TENANT_ID
+      subscription-id:
+        type: env_var_name
+        default: AZURE_SUBSCRIPTION_ID
+      backend-access-key:
+        type: env_var_name
+        default: BACKEND_ACCESS_KEY
+      backend-resource-group-name:
+        type: env_var_name
+        default: BACKEND_RG
+      backend-storage-account-name:
+        type: env_var_name
+        default: BACKEND_SG      
+      backend-container-name:
+        type: env_var_name
+        default: BACKEND_CONTAINER
+      backend-key:
+        type: env_var_name
+        default: BACKEND_KEY
+      oidc_token_file_path: 
+        type: string
+        default: ./circleci/oidc_token.json
+    steps:
+      - attach_workspace:
+          at: workspace
+      - run: 
+          command: |
+            export ARM_OIDC_TOKEN=$CIRCLE_OIDC_TOKEN
+            export ARM_CLIENT_ID="${<< parameters.client-id >>}"
+            export ARM_SUBSCRIPTION_ID="${<< parameters.subscription-id >>}"
+            export ARM_TENANT_ID="${<< parameters.tenant-id >>}"
+            export ARM_USE_OIDC=true
+
+            python3 /rackspace/apply.py
+
+          name: Terraform Apply - Access Key for Backend, OIDC for provider      
+jobs:
+  terraform-test:
+    resource_class: small
+    docker:
+      - image: codeinavan/pipeline-toolbox-tf:latest
+    steps:
+      - az-oidc-authentication-terraform-plan
+      - az-access-key-authentication-terraform-plan
+      - az-oidc-authentication-terraform-apply
+
+workflows:
+  example-workflow:
+    jobs:
+      - terraform-test:
+          name: Verify Azure OIDC
+          context: 
+          - azure-oidc-dev

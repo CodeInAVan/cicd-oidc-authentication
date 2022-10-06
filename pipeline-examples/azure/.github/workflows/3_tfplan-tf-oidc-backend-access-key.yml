@@ -1,0 +1,111 @@
+
+name: 3 TF Plan Azure OIDC-Key Native Runner (Access Key backend)
+
+on:
+  workflow_dispatch:
+    inputs:
+      destroy:
+        type: boolean
+        description: Destroy environment?
+        required: true
+        default: false
+
+  pull_request:
+    paths:
+    - layers/**
+
+env:
+  tf_actions_working_dir: layers/000base
+
+permissions:
+  id-token: write
+  contents: read
+  
+jobs:
+  plan:
+    name: Terraform plan
+    runs-on: ubuntu-latest
+    environment: tfplan
+    defaults:
+      run:
+        working-directory: ${{ env.tf_actions_working_dir }}
+    env:
+        NODE_ENV: tfplan
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        TF_LOG: "DEBUG"
+        BACKEND_RG: ${{ secrets.BACKEND_RG}}
+        BACKEND_SG: ${{ secrets.BACKEND_SG}}
+        BACKEND_CONTAINER: ${{ secrets.BACKEND_CONTAINER}}
+        BACKEND_KEY: ${{ secrets.BACKEND_KEY}}
+        
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform version
+      id: version
+      run: terraform --version
+        
+    - name: Terraform env
+      id: printenv
+      run: printenv
+    
+    - name: Terraform Init access key
+      id: init-access-key
+      run: |
+        terraform init \
+          -backend-config="use_oidc=$ARM_USE_OIDC" \
+          -backend-config="resource_group_name=$BACKEND_RG" \
+          -backend-config="storage_account_name=$BACKEND_SG" \
+          -backend-config="container_name=$BACKEND_CONTAINER" \
+          -backend-config="key=$BACKEND_KEY" \
+          -backend-config="access_key=$ARM_ACCESS_KEY" \
+          -reconfigure
+      env:
+        TF_LOG_PATH: "terraform-access-key.log"
+        ARM_USE_OIDC: false
+        ARM_ACCESS_KEY: ${{ secrets.BACKEND_ACCESS_KEY }}
+
+    - name: Upload the accesskey debug log
+      uses: actions/upload-artifact@v3
+      with:
+        name: tf-debug-key-log
+        path: "${{ env.tf_actions_working_dir }}/terraform-access-key.log"
+    
+    - name: Calculate destroy arg
+      id: destroy_arg
+      run: |
+        if [ $DESTROY == "true" ]; then
+          echo "::set-output name=val::-destroy" 
+        else
+          echo "::set-output name=val:: "
+        fi
+      env:
+        DESTROY: ${{ github.event.inputs.destroy }}
+
+    - name: Terraform Plan oidc
+      id: plan
+      run: |
+        terraform plan \
+          $DESTROY -no-color -out=out.tfplan
+      env:
+        ARM_USE_OIDC: true
+        TF_LOG_PATH: "terraform-plan-oidc.log"
+
+    - name: Upload the plan oidc debug log
+      uses: actions/upload-artifact@v3
+      with:
+        name: tf-debug-plan-oidc-log
+        path: "${{ env.tf_actions_working_dir }}/terraform-plan-oidc.log"
+    
+    - name: Upload the plan
+      uses: actions/upload-artifact@v3
+      with:
+        name: tf-plan-oidc
+        path: "${{ env.tf_actions_working_dir }}/out.tfplan"
+
