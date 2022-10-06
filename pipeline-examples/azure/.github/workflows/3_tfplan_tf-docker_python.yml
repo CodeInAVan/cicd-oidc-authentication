@@ -1,5 +1,5 @@
 
-name: 6 TF Plan Azure Docker Python
+name: 3 TF Plan Azure Docker Python
 
 on:
   workflow_dispatch:
@@ -64,26 +64,5 @@ jobs:
       with:
         name: tf-plan-oidc-result
         path: ${{ github.workspace }}/workspace/**/terraform.*.plan
-   
 
-    - name: Terraform Plan Plython with access key
-      id: plan-key
-      run: python3 /rackspace/plan.py
-      env:
-        TF_LOG_PATH: "/tmp/terraform-access-key.log"
-        ARM_USE_OIDC: true
-        BACKEND_ACCESS_KEY: ${{ secrets.BACKEND_ACCESS_KEY }}
-
-    - name: Upload the access key debug log
-      uses: actions/upload-artifact@v3
-      with:
-        name: tf-debug-access-key-log
-        path: "/tmp/terraform-access-key.log"
-
-
-    - name: Upload the plan
-      uses: actions/upload-artifact@v3
-      with:
-        name: tf-plan-access-key-result
-        path: ${{ github.workspace }}/workspace/**/terraform.*.plan
    
