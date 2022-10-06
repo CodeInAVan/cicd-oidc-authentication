@@ -11,12 +11,3 @@ module "oidc-circleci-azure" {
         "user2"="< user2 id >"
     }
 }
-
-
-
-
-
-
-
-
-
