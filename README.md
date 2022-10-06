@@ -7,7 +7,7 @@ Completed so far:
 
 - Creation of OIDC identities for Azure for Circleci and Github Actions.
 - Sample Terraform execution in workflows for Circleci and Github Actions
-- Dockerfile for a a container of tools used by rackspace in customer pipelines (to show integration of OIDC into both "native" execution onteh CI/CD pipelines and custom docker container based executions)
+- Dockerfile for a a container of tools used by rackspace in customer pipelines (to show integration of OIDC into both "native" execution on the CI/CD pipelines and custom docker container based executions)
 
 TODO:
 
