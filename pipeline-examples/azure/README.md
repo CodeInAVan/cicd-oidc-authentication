@@ -104,8 +104,6 @@ AZURE_CLIENT_ID - the appid created in Azure AD (see "cloud-provider-setup")
 AZURE_TENANT_ID
 AZURE_SUBSCRIPTION_ID
 
-BACKEND_ACCESS_KEY - IS NOT REQUIRED IN GITHUB ACTIONS
-
 BACKEND_RG - Resouce group of backend
 BACKEND_SG - Storage group of backend     
 BACKEND_CONTAINER - Container name of backend container e.g. tfstate
