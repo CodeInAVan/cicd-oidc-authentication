@@ -1,7 +1,7 @@
 
 ## Introduction
 
-This Repo contains examples of how to configure Cloud Providers and cloud CI/CD platforms (Circleci and GitHub Actions) to authenticate with OpenID Connect (OIDC)
+This repo contains examples of how to configure Cloud Providers and cloud CI/CD platforms (Circle CI and GitHub Actions) to authenticate with OpenID Connect (OIDC)
 
 Completed so far:
 
