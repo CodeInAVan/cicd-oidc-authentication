@@ -10,7 +10,7 @@ Structure
 - modules/oidc-circleci-azure - module for terraform, creates azure appid
 - main.tf - example module call
   
-  Terraform module call example is shown below, note: circleci oidc is tied to a user, so every user who is executing the pipeline needs to be added as a unique federated credential, there is a "system user" that is used by the scheduled pipelines. Only way i've foudn to discover it's ID is to run a scheduled pipeline and when teh OIDC authentication fails it shows you the subject string used with the sending user ID.
+  Terraform module call example is shown below, note: circleci oidc is tied to a user, so every user who is executing the pipeline needs to be added as a unique federated credential, there is a "system user" that is used by the scheduled pipelines. Only way i've found to discover it's ID is to run a scheduled pipeline and when the OIDC authentication fails it shows you the subject string used with the sending user ID.
 
 
 ```
