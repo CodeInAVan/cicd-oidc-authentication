@@ -108,3 +108,16 @@ BACKEND_KEY - State Key e.g. terraform.tfstate
 
 ```
 ![](./images/github-secrets.jpg)
+
+## Useful references
+
+Circleci (covers project settings and GCP/AWS) : https://circleci.com/docs/openid-connect-tokens
+
+Github Actions (sections on AWS/GCP and Azure): https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
+
+Azure and Github Actions, useful walk through: https://www.cloudwithchris.com/blog/using-oidc-github-actions-azure-swa/
+
+Azure and Github actions MS guid: https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux
+
+Circleci and GCP: https://harryhodge.co.uk/posts/2022/07/keyless-authentication-from-circleci-to-google-cloud/
+
