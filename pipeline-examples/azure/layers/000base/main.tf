@@ -6,5 +6,5 @@ resource "random_string" "resource_code" {
 
 resource "azurerm_resource_group" "testrg" {
   name     = "oidc-testing-rg-${random_string.resource_code.result}"
-  location = "UKSouth"
+  location = var.resource_group_location
 }
