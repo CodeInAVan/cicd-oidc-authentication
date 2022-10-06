@@ -14,7 +14,7 @@ Assumes the cloud-provider-setup has been completed.
 ## Azure - CircleCI
 
 
-| CIRCLECI LIMITAION: Terraform Azure backend does not support “generic oidc”, it only supports oidc on github actions, so a "storage access key" needs to be used to connect to a state container. Terraform limitations for Azure are annoying but may be resolved by the time you read this paper, open issue that should resolve it https://github.com/hashicorp/terraform/issues/31802 |
+| CIRCLECI/TERRAFORM OIDC SUPPORT: Terraform Azure backend does not support “generic oidc”, it only supports oidc on github actions, so a "storage access key" needs to be used to connect to a state container. Terraform limitations for Azure are annoying but may be resolved by the time you read this paper, open issue that should resolve it https://github.com/hashicorp/terraform/issues/31802 |
 | --- |
 
 
