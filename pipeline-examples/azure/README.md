@@ -11,9 +11,6 @@ config-docker.yml - uses a docker image with rackspace pipeline tools added and 
 
 Requires the project variables to be created as shown:
 
-<a>
-    <img src="./images/circleci-variables.jpg" alt="circleci variables" title="circleci variables" align="left" height="400" />
-</a>
 
 ```
 AZURE_CLIENT_ID - teh appid created in Azure AD (see "cloud-provider-setup")
@@ -29,6 +26,9 @@ BACKEND_CONTAINER - Container name of backend container e.g. tfstate
 BACKEND_KEY - State Key e.g. terraform.tfstate
 
 ```
+
+![](./images/circleci-variables.jpg)
+
 ## Azure Github Actions
 
 Requires the repo secrets to be created as shown:
@@ -47,8 +47,4 @@ BACKEND_CONTAINER - Container name of backend container e.g. tfstate
 BACKEND_KEY - State Key e.g. terraform.tfstate
 
 ```
-
-<a>
-    <img src="./images/github-secrets.jpg" alt="github secrets" title="github secrets" align="left" height="400" />
-</a>
-
+![](./images/github-secrets.jpg)
