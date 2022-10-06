@@ -15,7 +15,9 @@ TODO:
 
 ### What is OpenID Connect (OIDC) and why should I use this?
 
-OpenID Connect allows your workflows/pipelines to exchange short-lived tokens directly from your cloud provider. This guide pulls together information from various sources to try and provide a single technical resource to help you implement OIDC in your code pipelines.
+OpenID Connect allows your workflows/pipelines to exchange short-lived tokens directly from your cloud provider. This guide pulls together information from various sources to try and provide a single technical resource to help you implement OIDC in your code pipelines. 
+
+Credit for content below goes mainly to [GitHub Docs](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect )
 
 ### Overview of OpenID Connect.
 
