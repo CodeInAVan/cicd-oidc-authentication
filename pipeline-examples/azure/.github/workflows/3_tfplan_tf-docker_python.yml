@@ -39,7 +39,7 @@ jobs:
       id: printenv
       run: printenv
 
-    - name: Terraform Plan Plython with OIDC
+    - name: Terraform Plan Python with OIDC
       id: plan-oidc
       run: python3 /rackspace/plan-oidc.py
       env:
@@ -51,13 +51,6 @@ jobs:
       with:
         name: tf-debug-oidc-log
         path: "/tmp/terraform-oidc.log"
-
-    - name: Terraform env
-      id: findfiles
-      run: |
-        pwd
-        echo GITHUB_WORKSPACE=$GITHUB_WORKSPACE
-        ls -alr $GITHUB_WORKSPACE/workspace
 
     - name: Upload the plan
       uses: actions/upload-artifact@v3

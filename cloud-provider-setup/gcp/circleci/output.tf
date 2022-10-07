@@ -1,3 +1,3 @@
 output "created-gcp-sa" {
-    value = module.oidc-circleci-gcp.sa-email
+  value = module.oidc-circleci-gcp.sa-email
 }

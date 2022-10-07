@@ -15,11 +15,11 @@ resource "azuread_service_principal" "github-oidc" {
 #create federated credential
 resource "azuread_application_federated_identity_credential" "github-oidc" {
   application_object_id = azuread_application.github-oidc.object_id
-  display_name          = "${var.var_github-credid}"
+  display_name          = var.var_github-credid
   description           = "Github Actions service account federated identity"
   audiences             = ["api://AzureADTokenExchange"]
   issuer                = "https://token.actions.githubusercontent.com"
-  subject               = "${var.var_github-oidc-subject}"
+  subject               = var.var_github-oidc-subject
 }
 
 # assign rights to credential - set principle role

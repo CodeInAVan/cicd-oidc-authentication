@@ -1,3 +1,3 @@
 output "created-appid" {
-    value = module.oidc-github-azure.azure-appid-clientid
+  value = module.oidc-github-azure.azure-appid-clientid
 }

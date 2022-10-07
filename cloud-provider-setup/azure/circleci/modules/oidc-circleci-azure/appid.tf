@@ -14,7 +14,7 @@ resource "azuread_service_principal" "circleci-oidc" {
 
 #create federated credential
 resource "azuread_application_federated_identity_credential" "circleci-oidc" {
-  for_each = var.var_circleci-user-ids
+  for_each              = var.var_circleci-user-ids
   application_object_id = azuread_application.circleci-oidc.object_id
   display_name          = "${var.var_circleci-credid}-${each.key}"
   description           = "Circleci service account federated identity"
