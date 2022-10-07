@@ -64,5 +64,9 @@ Azure and Github Actions, useful walk through: https://www.cloudwithchris.com/bl
 
 Azure and Github actions MS guid: https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux
 
+Azure Workload Identity Notes (for circleci the type is "other provider"): https://learn.microsoft.com/en-us/azure/active-directory/develop/workload-identity-federation-create-trust?pivots=identity-wif-apps-methods-azp#other-identity-providers 
+
+Azure Workload Identity Notes for GitHub: https://learn.microsoft.com/en-us/azure/active-directory/develop/workload-identity-federation-create-trust?pivots=identity-wif-apps-methods-azp#github-actions
+
 Circleci and GCP: https://harryhodge.co.uk/posts/2022/07/keyless-authentication-from-circleci-to-google-cloud/ 
 
