@@ -6,7 +6,7 @@ Structure
 
 - docker        - example dockerfile for rackspace tooling container used to execute python terraform wrapper.
 - images        - screen shots used in this readme
-- layers/       - example terraform that can be executed by the circleci or github workflows to create a test resource an confirm OIDC is working.
+- layers/       - example terraform that can be executed by the circleci or github workflows to read a test resource an confirm OIDC is working.
 
 Assumes the cloud-provider-setup has been completed.
 
