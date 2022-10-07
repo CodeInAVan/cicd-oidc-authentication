@@ -30,6 +30,11 @@ These create an application, with one or more federated credentials:
 
 ### Circle CI example credential:
 
+As Circle CI hard codes the user into the OIDC subject you need to create multiple credentials if a larger team is executing the pipeline.
+
+| NOTE: [from Azure notes here ](https://learn.microsoft.com/en-us/azure/active-directory/develop/workload-identity-federation-create-trust?pivots=identity-wif-apps-methods-azp#important-considerations-and-restrictions) A maximum of 20 federated identity credentials can be added to an application or user-assigned managed identity. |
+| --- |
+
 ![](../images/azure-circleci-federated-user-detail.jpg)
 
 ### Github Actions example credential:
