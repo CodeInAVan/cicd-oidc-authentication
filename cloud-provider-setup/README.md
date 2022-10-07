@@ -6,6 +6,9 @@ The cloud OIDC trust configuration is unique to each cloud provider and each CI/
 
 Azure OIDC authentication is defined with “Azure Active Directory” “App registrations”.
 
+| NOTE: [from Azure notes here ](https://learn.microsoft.com/en-us/azure/active-directory/develop/workload-identity-federation-create-trust?pivots=identity-wif-apps-methods-azp#important-considerations-and-restrictions) A maximum of 20 federated identity credentials can be added to an application or user-assigned managed identity. |
+| --- |
+
 An application needs to be created, and associated with a service principle, with the required roles in the subscription. The Application (client) ID highlighted below in red is important and needs to be provided to the CI/CD platform.
 
 ![](../images/azure-circleci-application.jpg)
