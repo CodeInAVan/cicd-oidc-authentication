@@ -1,0 +1,111 @@
+version: '2.1'
+commands:
+  gcp-oidc-generate-cred-config-file:
+    description: "Authenticate with GCP using a CircleCI OIDC token."
+    parameters:
+      project_number: 
+        type: env_var_name
+        default: GCP_PROJECT_NUMBER
+      workload_identity_pool_id: 
+        type: env_var_name
+        default: GCP_WIP_ID
+      workload_identity_pool_provider_id: 
+        type: env_var_name
+        default: GCP_WIP_PROVIDER_ID
+      service_account_email: 
+        type: env_var_name
+        default: GCP_SERVICE_ACCOUNT_EMAIL
+      gcp_cred_config_file_path: 
+        type: string
+        default: /root/circleci/gcp_cred_config.json
+      oidc_token_file_path: 
+        type: string
+        default: /root/circleci/oidc_token.json
+    steps:
+      - run:
+          command: |
+            # Store OIDC token in temp file
+            mkdir /root/circleci
+            echo $CIRCLE_OIDC_TOKEN > << parameters.oidc_token_file_path >>
+
+            # Create a credential configuration for the generated OIDC ID Token
+            gcloud iam workload-identity-pools create-cred-config \
+                "projects/${<< parameters.project_number >>}/locations/global/workloadIdentityPools/${<< parameters.workload_identity_pool_id >>}/providers/${<< parameters.workload_identity_pool_provider_id >>}"\
+                --output-file="<< parameters.gcp_cred_config_file_path >>" \
+                --service-account="${<< parameters.service_account_email >>}" \
+                --credential-source-file=<< parameters.oidc_token_file_path >>
+
+      - store_artifacts:
+          path: "<< parameters.gcp_cred_config_file_path >>"
+          destination: oidc_token
+      - store_artifacts:
+          path: "<< parameters.oidc_token_file_path >>"
+          destination: circle_oidc_token
+
+  gcp-oidc-authenticate:
+    description: "Authenticate with GCP using a GCP credentials file."
+    parameters:
+      gcp_cred_config_file_path: 
+        type: string
+        default: /root/circleci/gcp_cred_config.json
+    steps:
+      - run:
+          command: |
+            # Configure gcloud to leverage the generated credential configuration
+            gcloud auth login --brief --cred-file "<< parameters.gcp_cred_config_file_path >>"
+
+            # Configure ADC
+            echo "export GOOGLE_APPLICATION_CREDENTIALS='<< parameters.gcp_cred_config_file_path >>'" | tee -a $BASH_ENV
+
+  gcp-oidc-authenticate-terraform-plan:
+    description: "Run Terraform Plan."
+    parameters:
+      gcp_cred_config_file_path: 
+        type: string
+        default: /root/circleci/gcp_cred_config.json
+    steps:
+      - checkout
+      - run:
+          command: |
+            # Configure gcloud to leverage the generated credential configuration
+            gcloud auth login --brief --cred-file "<< parameters.gcp_cred_config_file_path >>"
+
+            # Configure ADC
+            echo "export GOOGLE_APPLICATION_CREDENTIALS='<< parameters.gcp_cred_config_file_path >>'" | tee -a $BASH_ENV
+
+            export GOOGLE_APPLICATION_CREDENTIALS='<< parameters.gcp_cred_config_file_path >>'
+            ACCESS_TOKEN=$(gcloud auth application-default print-access-token)
+
+            # run terraform
+            cd ./layers/000base
+
+            # use backend details from project env vars.
+            terraform init \
+              -backend-config="prefix=$BACKEND_PREFIX" \
+              -backend-config="bucket=$BACKEND_BUCKET" \
+              -reconfigure
+
+
+            printenv
+
+echo TF_VAR_PROJECT
+
+            terraform plan
+jobs:
+  gcp-oidc-defaults:
+    resource_class: small
+    docker:
+      - image: codeinavan/pipeline-toolbox-gcp:latest
+    steps:
+      - gcp-oidc-generate-cred-config-file
+      # - gcp-oidc-authenticate
+      - gcp-oidc-authenticate-terraform-plan
+
+              
+workflows:
+  main:
+    jobs: 
+      - gcp-oidc-defaults:
+          name: Generate Creds File and Authenticate
+          context: 
+          - gcp-oidc-dev
