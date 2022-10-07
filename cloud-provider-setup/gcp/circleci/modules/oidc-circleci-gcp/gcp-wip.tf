@@ -36,6 +36,9 @@ resource "google_service_account_iam_policy" "devops-account-iam" {
   service_account_id = google_service_account.service_account_circleci_devops.name
   policy_data        = data.google_iam_policy.circleci_devops.policy_data
   provider           = google-beta
+  depends_on = [
+    google_iam_workload_identity_pool_provider.circelci
+  ]
 }
 
 

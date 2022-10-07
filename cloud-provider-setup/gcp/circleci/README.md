@@ -29,12 +29,17 @@ module "oidc-circleci-gcp" {
 }
 ```
 
-Useful References for GCP OIDC:
 
-https://circleci.com/blog/openid-connect-identity-tokens/
+## Notes
 
-https://discuss.circleci.com/t/walk-through-oidc-to-gcp/44224
+GCP does a soft delete of a Workload Identiy Pool (and retains the object name) when terraform destroys it, so it cannot be re-created with the same name!
 
-https://harryhodge.co.uk/posts/2022/07/keyless-authentication-from-circleci-to-google-cloud/
+## Useful references:
 
+Circleci (covers project settings and GCP/AWS) : https://circleci.com/docs/openid-connect-tokens
 
+Github Actions (sections on AWS/GCP and Azure): https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect 
+
+Circleci and GCP: https://harryhodge.co.uk/posts/2022/07/keyless-authentication-from-circleci-to-google-cloud/ 
+
+GCP OIDC walk through: https://discuss.circleci.com/t/walk-through-oidc-to-gcp/44224
