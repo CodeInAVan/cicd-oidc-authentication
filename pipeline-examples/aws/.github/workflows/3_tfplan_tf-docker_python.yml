@@ -1,0 +1,74 @@
+
+name: 3 TF Plan AWS Docker Python
+
+on:
+  workflow_dispatch:
+    inputs:
+      destroy:
+        type: boolean
+        description: Destroy environment?
+        required: true
+        default: false
+        
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
+jobs:
+  container-test-job:
+    runs-on: ubuntu-latest
+    environment: tfplan
+    continue-on-error: true
+    container:
+      image: codeinavan/pipeline-toolbox-aws:latest
+      env:
+        NODE_ENV: tfplan
+        TF_LOG: "DEBUG"
+        BACKEND_BUCKET : ${{ secrets.BACKEND_BUCKET }}
+        BACKEND_DYNAMODB_TABLE: ${{ secrets.BACKEND_DYNAMODB_TABLE}}
+        BACKEND_KEY: ${{ secrets.BACKEND_KEY}}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Log in to AWS using OIDC
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        role-session-name: samplerolesession
+        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+    - name: 'Run aws commands'
+      run: |
+        aws sts get-caller-identity
+      
+    - name: Terraform env
+      id: printenv
+      run: printenv
+
+    - name: Terraform Plan Python with OIDC
+      id: plan-oidc
+      run: python3 /rackspace/plan.py
+      env:
+        ARM_USE_OIDC: true
+        TF_LOG_PATH: "/tmp/terraform-oidc.log"
+
+    - name: Upload the oidc debug log
+      uses: actions/upload-artifact@v3
+      with:
+        name: tf-debug-oidc-log
+        path: "/tmp/terraform-oidc.log"
+
+    - name: Terraform env
+      id: findfiles
+      run: |
+        pwd
+        echo GITHUB_WORKSPACE=$GITHUB_WORKSPACE
+        ls -alr $GITHUB_WORKSPACE/workspace
+
+    - name: Upload the plan
+      uses: actions/upload-artifact@v3
+      with:
+        name: tf-plan-oidc-result
+        path: ${{ github.workspace }}/workspace/**/terraform.*.plan
+   

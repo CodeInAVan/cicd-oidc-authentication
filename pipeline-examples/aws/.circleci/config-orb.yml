@@ -1,0 +1,63 @@
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@3.1.3
+  terraform: circleci/terraform@3.1.0
+
+jobs:
+  verify-install:
+    executor: aws-cli/default
+    resource_class: small
+    parameters:
+      aws-default-region: 
+        type: env_var_name
+        default: AWS_DEFAULT_REGION
+      aws-role-arn: 
+        type: env_var_name
+        default: AWS_ROLE_ARN
+      backend-storage-bucket:
+        type: env_var_name
+        default: BACKEND_BUCKET     
+      backend-dynamodb-table:
+        type: env_var_name
+        default: BACKEND_DYNAMODB_TABLE
+      backend-key:
+        type: env_var_name
+        default: BACKEND_KEY
+    steps:
+      - checkout
+      - aws-cli/install
+      - aws-cli/assume-role-with-web-identity:
+          profile-name: WEB IDENTITY PROFILE
+          role-arn: ${<< parameters.aws-role-arn >>}
+          role-session-name: example-session
+
+      - terraform/install:
+          terraform_version: 1.3.1
+      
+      - run:
+          name: Verify Terraform test creation of key-pair Resource
+          command: |
+            
+            cd ./layers/000base
+
+            terraform init \
+              -backend-config="bucket=$BACKEND_BUCKET" \
+              -backend-config="encrypt=true" \
+              -backend-config="region=$AWS_DEFAULT_REGION" \
+              -backend-config="key=$BACKEND_KEY" \
+              -backend-config="dynamodb_table=$BACKEND_DYNAMODB_TABLE" \
+              -reconfigure
+
+            terraform plan
+
+            ## terraform apply -auto-approve
+
+
+workflows:
+  example-workflow:
+    jobs:
+      - verify-install:
+          name: verify aws and test oidc
+          context: 
+          - aws-oidc-dev

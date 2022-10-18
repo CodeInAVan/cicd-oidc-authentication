@@ -1,0 +1,77 @@
+version: 2.1
+commands:
+  oidc-generate-cred-config-file-test:
+    description: "Test existence of CircleCI OIDC token and test thumbprint of oidc cert"
+    parameters:
+      oidc_token_file_path: 
+        type: string
+        default: /root/circleci/oidc_token.json
+    steps:
+      - run:
+          command: |
+            # Store OIDC token in temp file
+            mkdir /root/circleci
+            echo $CIRCLE_OIDC_TOKEN > << parameters.oidc_token_file_path >>
+
+            set -e 
+
+            XT=`mktemp`
+            XXT=`mktemp`
+
+            function cleanup {
+              rm -f ${XT} ${XXT}
+            }
+
+            trap cleanup SIGHUP SIGINT SIGTERM EXIT
+
+            yum install openssl -y
+
+            THUMBPRINT=$(echo QUIT | openssl s_client -showcerts -connect oidc.circleci.com:443 2>/dev/null > ${XT}; cat ${XT} | sed -n '/BEGIN\ CERTIFICATE/,/END\ CERTIFICATE/ p' | tac | awk '/-----BEGIN CERTIFICATE-----/ {exit} 1' > ${XXT} && echo '-----BEGIN CERTIFICATE-----' >> ${XXT} && tac ${XXT} > ${XT}; openssl x509 -in ${XT} -fingerprint -noout | sed -r 's|.*+?=(.*)|\1|g' | sed 's|:||g' | awk '{print tolower($1)}')
+            THUMBPRINT_JSON="{\"thumbprint\": \"${THUMBPRINT}\"}"
+            echo $THUMBPRINT_JSON
+
+      - store_artifacts:
+          path: "<< parameters.oidc_token_file_path >>"
+          destination: circle_oidc_token
+
+  aws-oidc-defaults:
+    description: AWS Authentication Test
+    steps:
+      - run:
+          name: authenticate-and-interact
+          command: |
+            # use the OpenID Connect token to obtain AWS credentials
+            read -r AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN \<<< \
+              $(aws sts assume-role-with-web-identity \
+               --role-arn ${AWS_ROLE_ARN} \
+               --role-session-name "CircleCI-${CIRCLE_WORKFLOW_ID}" \
+               --web-identity-token $CIRCLE_OIDC_TOKEN \
+               --duration-seconds 3600 \
+               --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
+               --output text)
+            export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+            # interact with AWS
+            aws sts get-caller-identity
+jobs:
+  aws-oidc-defaults:
+    resource_class: small
+    docker:
+      - image: amazon/aws-cli
+    parameters:
+      aws-default-region: 
+        type: env_var_name
+        default: AWS_DEFAULT_REGION
+      aws-role-arn: 
+        type: env_var_name
+        default: AWS_ROLE_ARN
+    steps:
+      # - oidc-generate-cred-config-file-test
+      - aws-oidc-defaults
+
+workflows:
+  main:
+    jobs: 
+      - aws-oidc-defaults:
+          name: authenticate-and-interact
+          context: 
+          - aws-oidc-dev

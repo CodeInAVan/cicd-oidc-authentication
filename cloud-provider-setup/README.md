@@ -9,6 +9,8 @@ The cloud OIDC trust configuration is unique to each cloud provider and each CI/
     - [Github Actions example credential:](#github-actions-example-credential)
   - [GCP Workload Identity Federation](#gcp-workload-identity-federation)
     - [GCP Workload Identity Federation Pools](#gcp-workload-identity-federation-pools)
+  - [AWS Identity Provder and Assue Role](#aws-identity-provder-and-assue-role)
+    - [AWS OpenID Connect Provider](#aws-openid-connect-provider)
   - [Useful references:](#useful-references)
 
 
@@ -62,19 +64,45 @@ GCP OIDC authentication is defined with IAM -> Workload Identity Federation -> W
 
 An identity pool needs to be created: 
 
-![](./images/gcp-wip.jpg)
+![](./gcp/circleci/images/gcp-wip.jpg)
 
 within the identity pool a provider is defined:
 
-![](./images/gcp-wip-details.jpg)
+![](./gcp/circleci/images/gcp-wip-details.jpg)
 
 and an service account is connected to the pool:
 
-![](./images/gcp-wip-details-sa.jpg)
+![](./gcp/circleci/images/gcp-wip-details-sa.jpg)
 
 Examples of the terraform arequired to configure a workload identity pool, provider and service account are included in this repository.
 
 NOTE: GCP does a soft delete of a Workload Identiy Pool (and retains the object name) when terraform destroys it, so it cannot be re-created with the same name!
+
+## AWS Identity Provder and Assue Role
+
+### AWS OpenID Connect Provider
+
+In AWS an OIDC Identity Provder needs to be created in IAM -> Identity Providers
+
+![](./aws/images/identity-provder.JPG)
+
+Note as you add the provider you need to request a thumbprint of the provider certificate.
+
+![](./aws/images/identity-provder-detail.JPG)
+
+Create a role based on this identity provider.
+
+![](./aws/images/web-identiy.jpg)
+
+TheTrust relationships link the provider token properties to the role
+
+Example for Circleci:
+
+![](./aws/images/web-identiy-trust-circleci.jpg)
+
+Example for Github Actions:
+
+![](./aws/images/web-identiy-trust-github.jpg)
 
 ## Useful references:
 

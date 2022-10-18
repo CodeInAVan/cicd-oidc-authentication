@@ -1,0 +1,1 @@
+AWS identity Provider setup examples for circleci and github actions

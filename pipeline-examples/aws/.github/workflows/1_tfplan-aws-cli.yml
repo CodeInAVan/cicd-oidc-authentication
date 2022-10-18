@@ -1,0 +1,50 @@
+
+name: 1 AWS CLI Test OIDC
+
+on:
+  workflow_dispatch:
+    inputs:
+      destroy:
+        type: boolean
+        description: Destroy environment?
+        required: true
+        default: false
+
+  pull_request:
+    paths:
+    - layers/**
+
+env:
+  tf_actions_working_dir: layers/000base
+
+permissions:
+  id-token: write
+  contents: read
+  
+jobs:
+  plan:
+    name: aws cli auth test
+    runs-on: ubuntu-latest
+    environment: tfplan
+    defaults:
+      run:
+        working-directory: ${{ env.tf_actions_working_dir }}
+    env:
+        NODE_ENV: tfplan
+        
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Log in to AWS using OIDC
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        role-session-name: samplerolesession
+        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+    - name: 'Run aws commands'
+      run: |
+        aws sts get-caller-identity
+
+   
