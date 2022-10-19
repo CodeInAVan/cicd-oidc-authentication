@@ -6,6 +6,7 @@ This repo contains examples of how to configure Cloud Providers and cloud CI/CD 
 Completed so far:
 
 - Creation of OIDC identities for Azure/GCP/AWS for Circleci and Github Actions.
+- Creation of OIDC identities for GCP to work with Azure DevOps
 - Sample Terraform execution in workflows for Circleci and Github Actions
 - Dockerfile for a a container of tools used by rackspace in customer pipelines (to show integration of OIDC into both "native" execution on the CI/CD pipelines and custom docker container based executions)
 
