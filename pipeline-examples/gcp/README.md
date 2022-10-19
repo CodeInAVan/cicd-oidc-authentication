@@ -3,7 +3,7 @@
 Structure
 
 - .circleci     - example circleci workflows
-- azuredevops   - example azure-pipelines.yml
+- azuredevops   - example azure-pipelines.yml and terraform to configure azure devops service connection/azure ad app registrion
 - docker        - example dockerfile for rackspace tooling container used to execute python terraform wrapper.
 - images        - screen shots used in this readme
 - layers/       - example terraform that can be executed by the circleci or github workflows to read a test resource an confirm OIDC is working.
