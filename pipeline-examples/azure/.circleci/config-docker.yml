@@ -73,9 +73,6 @@ commands:
       subscription-id:
         type: env_var_name
         default: AZURE_SUBSCRIPTION_ID
-      backend-access-key:
-        type: env_var_name
-        default: BACKEND_ACCESS_KEY
       backend-resource-group-name:
         type: env_var_name
         default: BACKEND_RG
@@ -132,9 +129,6 @@ commands:
       subscription-id:
         type: env_var_name
         default: AZURE_SUBSCRIPTION_ID
-      backend-access-key:
-        type: env_var_name
-        default: BACKEND_ACCESS_KEY
       backend-resource-group-name:
         type: env_var_name
         default: BACKEND_RG
@@ -161,7 +155,7 @@ commands:
             export ARM_TENANT_ID="${<< parameters.tenant-id >>}"
             export ARM_USE_OIDC=true
 
-            python3 /rackspace/apply.py
+            python3 /rackspace/apply-oidc.py
 
           name: Terraform Apply - Access Key for Backend, OIDC for provider      
 jobs:

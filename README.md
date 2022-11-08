@@ -63,6 +63,8 @@ Github Actions (sections on AWS/GCP and Azure): https://docs.github.com/en/actio
 
 Azure and Github Actions, useful walk through: https://www.cloudwithchris.com/blog/using-oidc-github-actions-azure-swa/
 
+Azure walkthrough following Terraform (1.3.4) Azure fix - https://adamrushuk.github.io/configure-terraform-openid-connect-oidc-authentication-from-gitlab-ci-to-azure/ 
+
 Azure and Github actions MS guid: https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux
 
 Azure Workload Identity Notes (for circleci the type is "other provider"): https://learn.microsoft.com/en-us/azure/active-directory/develop/workload-identity-federation-create-trust?pivots=identity-wif-apps-methods-azp#other-identity-providers 

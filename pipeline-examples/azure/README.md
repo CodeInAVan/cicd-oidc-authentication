@@ -14,7 +14,7 @@ Assumes the cloud-provider-setup has been completed.
 ## Azure - CircleCI
 
 
-| CIRCLECI/TERRAFORM OIDC SUPPORT: Terraform Azure backend does not support “generic oidc”, it only supports oidc on github actions, so a "storage access key" needs to be used to connect to a state container. Terraform limitations for Azure are annoying but may be resolved by the time you read this paper, open issue that should resolve it https://github.com/hashicorp/terraform/issues/31802 |
+| CIRCLECI/TERRAFORM OIDC SUPPORT: Terraform Azure backend support added in version 1.3.4 |
 | --- |
 
 
@@ -36,7 +36,7 @@ workflows:
             - my-context
 ```
 
-  5.   Use the environment variable CIRCLECI_OIDC_TOKEN to access the token for Terraform and AZ cli.
+  1.   Use the environment variable CIRCLECI_OIDC_TOKEN to access the token for Terraform and AZ cli.
 
 
 
@@ -54,8 +54,6 @@ AZURE_CLIENT_ID - the appid created in Azure AD (see "cloud-provider-setup")
 
 AZURE_TENANT_ID
 AZURE_SUBSCRIPTION_ID
-
-BACKEND_ACCESS_KEY - access key from Azure storage group, needed until terraform backend supports OIDC (see issue https://github.com/hashicorp/terraform/issues/31802 )
 
 BACKEND_RG - Resource group of backend
 BACKEND_SG - Storage group of backend     
@@ -124,3 +122,4 @@ Azure and Github actions MS guid: https://learn.microsoft.com/en-us/azure/develo
 
 Circleci and GCP: https://harryhodge.co.uk/posts/2022/07/keyless-authentication-from-circleci-to-google-cloud/
 
+Azure Config Example - Updated for OIDC in Azure in Terraform 1.3.4 : https://adamrushuk.github.io/configure-terraform-openid-connect-oidc-authentication-from-gitlab-ci-to-azure/ 

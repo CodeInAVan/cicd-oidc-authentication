@@ -33,8 +33,8 @@ RUN git clone --depth=1 https://github.com/tfutils/tfenv.git /var/opt/tfenv \
   && chmod +x /var/opt/tfenv/bin/* /var/opt/tfenv/libexec/* \
   && ln -s /var/opt/tfenv/bin/* /usr/local/bin
 
-# recent terraform versions
-RUN tfenv install 1.3.1
+# recent terraform versions 1.3.4 fixes oidc issue with azure
+RUN tfenv install 1.3.4
 #RUN tfenv install 0.14.11
 #RUN tfenv install 0.13.7
 #RUN tfenv install 0.12.31
@@ -42,7 +42,7 @@ RUN tfenv install 1.3.1
 #RUN tfenv install 0.11.8
 #RUN tfenv install 0.11.7
 
-RUN tfenv use 1.3.1
+RUN tfenv use 1.3.4
 #RUN tfenv use 0.11.8
 
 # scripts from toolbox
